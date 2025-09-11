@@ -82,7 +82,7 @@ The second model we started to dabble with diff columns instead of home and away
 
 ---
 
-# THIRD MODEL
+## THIRD MODEL
 
 The third model started looking at which columns we should actually be including and it came out to the following:  
 
