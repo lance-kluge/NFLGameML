@@ -29,45 +29,45 @@ Team stats like:
 - First downs  
 - And much more  
 
-All of these stats were wrangled using some Pandas data wrangling in order to create what I will refer to as **"Rolling Stats"**.  
+All of these stats were wrangled using Pandas in order to create what I will refer to as **"Rolling Stats"**.  
 
 ---
 
 ## ROLLING STATS 
 
-These rolling stats focus on creating data that would be available to you and I before the NFL game would have been played. That means that we are omitting week 1 predictions as we don't have the greatest ability to predict those stats from this season given no games had been played.  
+These rolling stats focus on creating data that would be available to you and I before the NFL game would have been played. That means that we are omitting week 1 predictions as I don't have the greatest ability to predict those stats from this season given no games had been played.  
 
-I considered using the team’s season averages from the end of the last season but decided that teams change slightly too much for that to be something worth doing. Therefore we have transformed the data into rolling stats.  
+I considered using the team’s season averages from the end of the last season but decided that teams change slightly too much for that to be something worth doing. Therefore I have transformed the data into rolling stats.  
 
 **Example**
 - Week 2 game → averages from the previous week (week 1)  
 - Week 10 game → averages from weeks 1–9  
 
-The key to creating these rolling stats was to:  
-1. Mark each game with an ID  
-2. Split up the home and away teams and bring their stats into one long dataframe  
-3. Sort by team and season  
-4. Apply the rolling stats method  
-5. Zip it all back together based on the game_ID  
+In the **rollingStatsCreation** Jupyter Notebook I created the rolling stats by:  
+1. Marking each game with an ID  
+2. Spliting up the home and away teams and bring their stats into one long dataframe  
+3. Sorting by team and season  
+4. Applying the rolling stats method  
+5. Ziping it all back together based on the game_ID  
 
 ---
 
-## TRAIN VS TESTING DATA  
+## TRAINING VS TESTING DATA  
 
-Originally I wanted to use just one season to test and the rest to train (from 2005 onwards) but eventually I end up switching to testing on the 2023 and 2024 season after model 1. I did this just to get double the games we need to predict so we get a better sense of how accurate the model is going to be on seasons (and games) that it has not seen yet in its training phase.  
+Originally I wanted to use just one season to test and the rest to train (from 2005 onwards) but eventually I end up switching to testing on the 2023 and 2024 season after model 1. I did this just to get double the games the model needs to predict so I get a better sense of how accurate the model is going to be on seasons (and games) that it has not seen yet in its training phase.  
 
 
-I chose the 2005 cutoff because the game of football does actually change over time. This past decade or two has started to let passing attacks shine when compared to (relatively) more run focused offenses. The 2005 cutoff was chosen fairly arbitrarily but that was when f the oldest qbs still in the league were drafted Aaron Rodgers so it felt fair.  
+I chose the 2005 cutoff because the game of football does change over time. This past decade or two has started to let passing attacks shine when compared to (relatively) more run focused offenses. The 2005 cutoff was chosen fairly arbitrarily but that was when the oldest QBs still in the league were drafted Aaron Rodgers so it felt fair.  
 
 This gave a nice balance of still being closer to the modern game, but also giving enough training data to use.  
 
-
+All of these stats where brought into a Pandas DataFrame in modelTraining Jupyter Notebook and then split into the effective training and testing data based off the constraints above.
 
 ---
 
 ## FIRST MODEL  
 
-Onto the modeling part of the project and we first start out doing zero transformations and including about 50 columns in the model.  
+Onto the modeling part of the project and I first start out doing zero transformations and including about 50 columns in the model. 
 
 - Accuracy: **~59%**  
 - Comparison: historically just picking the home team every single time = **57%**  
@@ -78,7 +78,7 @@ It was sloppy and not very well thought out, but a nice confidence boost that I 
 
 ## SECOND MODEL  
 
-The second model we started to dabble with diff columns instead of home and away columns. We wanted to see if one team had a significant advantage over the other team in terms of a certain given category.  
+The second model I started to dabble with diff columns instead of home and away columns. I wanted to see if one team had a significant advantage over the other team in terms of a certain given category.  
 
 - Accuracy: **~62%**  
 
@@ -86,7 +86,7 @@ The second model we started to dabble with diff columns instead of home and away
 
 ## THIRD MODEL
 
-The third model started looking at which columns we should actually be including and it came out to the following:  
+The third model started looking at which columns I should be including and it came out to the following:  
 
 `['score_diff', 'points_allowed_diff', 'pass_att_diff', 'pen_yards_diff', 'first_downs_diff', 'sacks_yards_diff', 'first_downs_from_penalty_diff']`
 
@@ -130,9 +130,13 @@ I ended up doing some exploration into how accurate the model was across weeks a
   <img width="644" height="455" alt="image" src="https://github.com/user-attachments/assets/7834dc64-7314-4367-96df-ad07f80d2e75" />
 </p>
 
-The graphs are above and are slightly interesting to see that our **Week 2 predictions are so good given we only have 1 week of data** on the teams that season. One potential cause that I see for this is that you almost always have a healthy team to start the season and around **40% of injuries happen in the first 4 weeks.**  
+The graphs are above and are slightly interesting to see that our **Week 2 predictions are so good given I only have 1 week of data** on the teams that season. One potential cause that I see for this is that you almost always have a healthy team to start the season and around **40% of injuries happen in the first 4 weeks.**  So teams can be healthy for most of Week 1 and 2, but end up being injured later down the line which is not reflected in the teams’ rolling stats.
 
-So teams can be healthy for most of Week 1 and 2, but end up being injured later down the line which is not reflected in the teams’ rolling stats. Please also note that this analysis was done on data that the model trained on already so the accuracy numbers are not the ones that I would expect on an unseen NFL game.  
+Another interesting dip in **accuracy** and **roc auc** was during **week 10**. I don't really have a great explination for this given its the middle of the season and **week 8, 9, 11, 12** are all some of the most accurate weeks for the model. 
+
+The last anomaly that I saw was in **week 18** which makes sense given that the NFL didn't utilize an **18 week season** until **2021**. It also would not help that during the last week of the season you are more likely to see **starters rest** which the model does not know about.
+
+Please also note that this analysis was done on data that the model trained on already so the accuracy numbers are not the ones that I would expect on an unseen NFL game.  
 
 ---
 
