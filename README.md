@@ -2,7 +2,7 @@
 
 # NFLGameML Predictive Model  
 
------ By: Lance Kluge ----  
+----- By: Lance Kluge -----  
 
 </div>  
 
@@ -78,7 +78,9 @@ It was sloppy and not very well thought out, but a nice confidence boost that I 
 
 ## SECOND MODEL  
 
-The second model I started to dabble with diff columns instead of home and away columns. I wanted to see if one team had a significant advantage over the other team in terms of a certain given category.  
+The second model I started to dabble with difference columns instead of home and away columns. I wanted to see if one team had a significant advantage over the other team in terms of a certain given category. These ended up being calculated by matching each home team stat with the same away team stat (ex: pass_yards_home and pass_yards_away). 
+
+These diff columns are then ```df[diff_stat] = df[home_team_stat] - df[away_team_stat]```
 
 - Accuracy: **~62%**  
 
