@@ -8,7 +8,7 @@
 
 ---
 
-## Overview  
+## OVERVIEW  
 
 This is a machine learning model utilizing **XGBoost**, **Pandas**, and **SKLearn**.  
 It focuses on predicting the winner of the NFL football game given only stats available before the game was played.  
@@ -33,7 +33,7 @@ All of these stats were wrangled using some Pandas data wrangling in order to cr
 
 ---
 
-## Rolling Stats  
+## ROLLING STATS 
 
 These rolling stats focus on creating data that would be available to you and I before an NFL game would ever be played. That means that we are omitting week 1 predictions as we don't have the greatest ability to predict those stats from this season given no games had been played.  
 
@@ -51,7 +51,7 @@ The key to creating these rolling stats was to:
 
 ---
 
-## Train vs Testing Data  
+## TRAIN VS TESTING DATA  
 
 Originally I wanted to use just one season to test and the rest to train (from 2005 onwards).  
 
@@ -63,7 +63,7 @@ I end up switching to testing on the 2023 and 2024 season after model 1 just to 
 
 ---
 
-## First Model  
+## FIRST MODEL  
 
 Onto the modeling part of the project and we first start out doing zero transformation and including about 50 columns in the model.  
 
@@ -74,7 +74,7 @@ It was sloppy and not very well thought out, but a nice confidence boost that I 
 
 ---
 
-## Second Model  
+## SECOND MODEL  
 
 The second model we started to dabble with diff columns instead of home and away columns. We wanted to see if one team had a significant advantage over the other team in terms of a certain given category.  
 
