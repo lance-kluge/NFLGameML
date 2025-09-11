@@ -18,7 +18,7 @@ This is accomplished by utilizing data from:
 
 This dataset is an accumulation of all the games played from 2002 season until the end of the 2024. The dataset contains things like the two teams that played, the week they played in, the season they played in, and then all the team stats you would think of.  
 
-Things like:  
+Team stats like:  
 - Points scored by the teams  
 - Total yards  
 - Total yards from rushing  
@@ -35,16 +35,17 @@ All of these stats were wrangled using some Pandas data wrangling in order to cr
 
 ## ROLLING STATS 
 
-These rolling stats focus on creating data that would be available to you and I before an NFL game would ever be played. That means that we are omitting week 1 predictions as we don't have the greatest ability to predict those stats from this season given no games had been played.  
+These rolling stats focus on creating data that would be available to you and I before the NFL game would have been played. That means that we are omitting week 1 predictions as we don't have the greatest ability to predict those stats from this season given no games had been played.  
 
 I considered using the team’s season averages from the end of the last season but decided that teams change slightly too much for that to be something worth doing. Therefore we have transformed the data into rolling stats.  
 
+**Example**
 - Week 2 game → averages from the previous week (week 1)  
 - Week 10 game → averages from weeks 1–9  
 
 The key to creating these rolling stats was to:  
 1. Mark each game with an ID  
-2. Split up the two teams and bring their stats into one long dataframe  
+2. Split up the home and away teams and bring their stats into one long dataframe  
 3. Sort by team and season  
 4. Apply the rolling stats method  
 5. Zip it all back together based on the game_ID  
@@ -53,24 +54,25 @@ The key to creating these rolling stats was to:
 
 ## TRAIN VS TESTING DATA  
 
-Originally I wanted to use just one season to test and the rest to train (from 2005 onwards).  
+Originally I wanted to use just one season to test and the rest to train (from 2005 onwards) but eventually I end up switching to testing on the 2023 and 2024 season after model 1. I did this just to get double the games we need to predict so we get a better sense of how accurate the model is going to be on seasons (and games) that it has not seen yet in its training phase.  
 
-I chose these two cutoffs as for 1, the game of football does actually change over time. These past decade or two has started to let passing attacks shine when compared to (relatively) more run focused offenses. The 2005 cutoff was chosen fairly arbitrarily but that was when some of the oldest qbs still in the league were drafted Aaron Rodgers.  
 
-This gives a nice balance of still being closer to the modern game, but also giving enough training data to use.  
+I chose the 2005 cutoff because the game of football does actually change over time. This past decade or two has started to let passing attacks shine when compared to (relatively) more run focused offenses. The 2005 cutoff was chosen fairly arbitrarily but that was when f the oldest qbs still in the league were drafted Aaron Rodgers so it felt fair.  
 
-I end up switching to testing on the 2023 and 2024 season after model 1 just to get double of games we need to predict so we get a better sense of how accurate the model is going to be on seasons (and games) that it has not seen yet in its training phase.  
+This gave a nice balance of still being closer to the modern game, but also giving enough training data to use.  
+
+
 
 ---
 
 ## FIRST MODEL  
 
-Onto the modeling part of the project and we first start out doing zero transformation and including about 50 columns in the model.  
+Onto the modeling part of the project and we first start out doing zero transformations and including about 50 columns in the model.  
 
 - Accuracy: **~59%**  
-- Comparison: just picking the home team every single time = **57%**  
+- Comparison: historically just picking the home team every single time = **57%**  
 
-It was sloppy and not very well thought out, but a nice confidence boost that I was going to be able to be better than just picking the home team all the time.  
+It was sloppy and not very well thought out, but a nice confidence boost that I was going to be able to be more accurate than just picking the home team all the time.  
 
 ---
 
@@ -78,7 +80,7 @@ It was sloppy and not very well thought out, but a nice confidence boost that I 
 
 The second model we started to dabble with diff columns instead of home and away columns. We wanted to see if one team had a significant advantage over the other team in terms of a certain given category.  
 
-- Accuracy: **~63%**  
+- Accuracy: **~62%**  
 
 ---
 
@@ -88,19 +90,19 @@ The third model started looking at which columns we should actually be including
 
 `['score_diff', 'points_allowed_diff', 'pass_att_diff', 'pen_yards_diff', 'first_downs_diff', 'sacks_yards_diff', 'first_downs_from_penalty_diff']`
 
-All of these columns ended up yielding an **accuracy of 69.5%** which is even better than Vegas. I then looked to using a grid search to find the optimal model parameters to try and squeeze a little more accuracy out of the model.  
+All of these columns ended up yielding an **accuracy of 65.4%** which was coming close to Vegas. I then looked to using a grid search to find the optimal model parameters to try and squeeze a little more accuracy out of the model.  
 
 ---
 
-## GRID SEARCH
+## GRID SEARCH FOR FINAL MODEL
 
-I ended up grid searching **972 possible combinations** using `GridSearchCV` from `sklearn`. This ended up yielding the following parameters:  
+I ended up grid searching **972 possible parameter combinations** using `GridSearchCV` from `sklearn`. It is a process used to find the best parameters for your model and uses the same training and testing data, the only thing changing are the parameters. The grid search ended up yielding the following parameters as the best:  
 
 `{'colsample_bytree': 1.0, 'gamma': 0, 'learning_rate': 0.01, 
  'max_depth': 4, 'n_estimators': 300, 'subsample': 0.6}`
 
 
-Although this ended up yielding a best CV ROC AUC score of **0.67** and testing on the test data at an **accuracy of 66%**. This was slightly confusing at first given I just had a model that had an accuracy of 69.5%, so I decided to do some more digging.  
+Although this ended up yielding a best CV ROC AUC score of **0.67** and testing on the test data at an **accuracy of 62.5%**. This was slightly confusing at first given I just had a model that had an accuracy of 65.4%, so I decided to do some more digging.  
 
 ---
 
@@ -108,7 +110,7 @@ Although this ended up yielding a best CV ROC AUC score of **0.67** and testing 
 
 The seasonal CV exploration was aimed at figuring out if I just got lucky/was overfitting to the 2023 and 2024 season. It looked at the cross-validation scores for years **2010 - 2024** and trained a model with the same attributes, but different parameters.  
 
-For each season, it trained on all the other seasons (i.e., 2010 would train on 2011–2024) and then test on the season and record the accuracy and ROC AUC.  
+For each season, it trained on all the other seasons (i.e., 2010 would train on 2011–2024) and then test on the unsed season in training and record the accuracy and ROC AUC.  
 
 It found that **Model 3 was particularly good at predicting the 2024 season, but not great on other seasons.** This led me to choosing the grid search model to continue with as it was more applicable to all seasons rather than being great at just one or two.  
 
@@ -116,7 +118,7 @@ It found that **Model 3 was particularly good at predicting the 2024 season, but
 
 ## FINAL MODEL
 
-The final model was just the best model found by the grid searched model utilizing the features found in the third model description. The final accuracy ended up being about **65%** for predicting NFL games that it had never seen based off the rolling, difference stats that were constructed for this model.  
+The final model was just the best model found by the grid searched model utilizing the features found in the third model description. The final accuracy ended up being about **65.6%** for predicting NFL games that it had never seen based off the rolling, difference stats that were constructed for this model.  
 
 I ended up doing some exploration into how accurate the model was across weeks and the rolling ROC and accuracy across the weeks.  
 
@@ -165,7 +167,7 @@ This will generate a `1` or `0` for each game, in which:
 
 ---
 
-I do not plan on using this model to sports bet, although I am going to have a little friendly competition with myself in terms of predicting games for the upcoming **2025 NFL season**, starting in Week 2.  
+I do not plan on using this model to sports bet, although I am going to have a little friendly competition with myself in terms of predicting games for the upcoming **2025 NFL season**, starting in Week 2. Really hoping that I can prove to myself that I know more football than any machine ever will.
 
 All together this was a whole lot of fun for me as someone who really loves the game of football and computer science. It was great to effectively take the training wheels off and pursue a project that was not for a grade or for Kaggle competitions in the machine learning field.  
 
